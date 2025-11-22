@@ -1,20 +1,19 @@
 
+
 <!DOCTYPE html>
 <html>
 <head>
-    <title>PDF Checker</title>
+  <title>PDF Checker</title>
 </head>
 <body>
 
-<h2>PDF Checker App</h2>
-
-<!-- Upload PDF -->
-<input type="file" id="pdf" accept="application/pdf" />
+<h2>Upload PDF</h2>
+<input type="file" id="pdf" accept="application/pdf">
 
 <h3>Enter 3 Rules</h3>
-<input id="rule1" placeholder="Rule 1" /><br><br>
-<input id="rule2" placeholder="Rule 2" /><br><br>
-<input id="rule3" placeholder="Rule 3" /><br><br>
+<input id="rule1" placeholder="Rule 1"><br><br>
+<input id="rule2" placeholder="Rule 2"><br><br>
+<input id="rule3" placeholder="Rule 3"><br><br>
 
 <button onclick="checkPDF()">Check Document</button>
 
@@ -23,32 +22,38 @@
 
 <script>
 async function checkPDF() {
-    const pdf = document.getElementById("pdf").files[0];
+  
+  const pdf = document.getElementById("pdf").files[0];
+  if (!pdf) {
+    alert("Upload a PDF first");
+    return;
+  }
 
-    if (!pdf) {
-        alert("Please upload a PDF");
-        return;
-    }
+  const rules = [
+    document.getElementById("rule1").value,
+    document.getElementById("rule2").value,
+    document.getElementById("rule3").value
+  ];
 
-    const rules = [
-        document.getElementById("rule1").value,
-        document.getElementById("rule2").value,
-        document.getElementById("rule3").value
-    ];
+  const form = new FormData();
+  form.append("pdf", pdf);
+  form.append("rules", JSON.stringify(rules));
 
-    const formData = new FormData();
-    formData.append("pdf", pdf);
-    formData.append("rules", JSON.stringify(rules));
-
-    const res = await fetch("https://niyamr-back-end.onrender.com/check", {
-        method: "POST",
-        body: formData
+  try {
+    const res = await fetch("https://niyamr-back-end-1.onrender.com/check", {
+      method: "POST",
+      body: form
     });
 
     const data = await res.json();
     document.getElementById("output").textContent = JSON.stringify(data, null, 2);
+
+  } catch (err) {
+    document.getElementById("output").textContent = "Error: " + err.message;
+  }
 }
 </script>
 
 </body>
 </html>
+
